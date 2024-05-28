@@ -21,6 +21,23 @@ public class Dictionary {
 	}
 	
 	
+	public void LoadDictionary(HashMap<String, String> hm) {
+		
+		if (ValidateDictionary(hm)) {
+			dict.clear(); 
+			dict = hm;
+		}
+		else System.out.println("Элементы загружаемого словаря не удовлетворяют ограничениям");
+	}
+	
+	private boolean ValidateDictionary(HashMap<String, String> hm) {
+		
+		for (String key: hm.keySet()) {
+			if (!CheckKey(key) || !CheckValue(hm.get(key))) return false;
+		}
+		return true;
+	}
+	
 	
 	
 }
