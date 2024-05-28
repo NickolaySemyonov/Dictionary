@@ -20,6 +20,28 @@ public class Dictionary {
 		ValueRegEx = valConstr;
 	}
 	
+	public String FindValue(String key) {
+		
+		if(CheckKey(key) && dict.containsKey(key)) return dict.get(key);
+		else {
+			System.out.println("Ключ не найден");
+			return "";
+		}
+	}
+	
+	public void SetValue(String key, String value) {
+		
+		if (CheckKey(key) || CheckValue(value)) 
+			dict.put(key, value); 
+		else 
+			System.out.println("Введенные ключ и значение не удовлетворяют ограничениям словаря");
+	}
+	
+	public void RemoveItem(String key) {
+		
+		if (CheckKey(key) && dict.containsKey(key)) dict.remove(key);
+		else System.out.println("Ключ не найден");
+	}
 	
 	public void LoadDictionary(HashMap<String, String> hm) {
 		
