@@ -1,14 +1,18 @@
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
+
+
 import java.io.BufferedReader;
-public class FileOperations {
+import java.io.File;
+public class FileOperations implements DataHandler{
 	
-	String filename;
+	private String filename;
+	private HashMap<String,String> dict;
 	
-	
-	public HashMap<String, String> GetDictFromFile(String filename){
+	private HashMap<String, String> GetDictFromFile(String filename){
 		HashMap<String, String> data = new HashMap<>(); 
         boolean all_paired = true;
         
@@ -26,17 +30,25 @@ public class FileOperations {
             System.out.println("Ошибка при чтении файла: " + e.getMessage());
         }
 		
-		if (!data.isEmpty() && all_paired) return data;
+		if (!data.isEmpty() && all_paired) {dict = data;return data;}
 		else {
-			System.out.println("Файл пуст или в нем присутствуют неполные пары ключ-значение");
+			//System.out.println("Файл пуст или в нем присутствуют неполные пары ключ-значение");
 			data.clear();
+			dict = data;
 			return data;
 		}
 	}
 	
-	public void WriteDictToFile(HashMap<String, String> data, String filename) {
-		
+	private void WriteDictToFile(HashMap<String, String> data, String filename) {
+		File file = new File(filename);
+		try {
+			file.createNewFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		try (FileWriter writer = new FileWriter(filename)) {
+			
 			for (HashMap.Entry<String, String> entry : data.entrySet()) {
 				writer.write(entry.getKey() + ":" + entry.getValue() + "\n");
 	        }
@@ -46,6 +58,20 @@ public class FileOperations {
 	    }
 	}
 
+	@Override
+	public HashMap<String, String> readFile() {
+		return GetDictFromFile(filename);
+	}
+
 	
-	
+	@Override
+	public void setFileName(String filename) {
+		this.filename = filename;
+	}
+
+	@Override
+	public void writeFile() {
+		WriteDictToFile(dict, filename);
+	}
+
 }

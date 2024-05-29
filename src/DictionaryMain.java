@@ -1,3 +1,4 @@
+import java.util.HashMap;
 
 public class DictionaryMain {
 
@@ -15,6 +16,15 @@ public class DictionaryMain {
 		 * 
 		 * 
 		 * */
+		DataHandler file_opers = new FileOperations();
+		file_opers.setFileName("C:\\Users\\nikol\\OneDrive\\Рабочий стол\\dic.txt");
+		
+		Dictionary dict = new Dictionary();
+		dict.SetConstraints("[A-Za-z]+$", "[A-Za-z]+$");
+		dict.LoadDictionary(file_opers);
+		System.out.println(dict.FindValue("a"));
+		
+		
 	}
 	
 }

@@ -2,7 +2,7 @@ import java.util.HashMap;
 
 public class Dictionary {
 	
-	private HashMap<String, String> dict;
+	private HashMap<String, String> dict = new HashMap<String, String>();
 	
 	private String KeyRegEx;
 	private String ValueRegEx;
@@ -51,6 +51,15 @@ public class Dictionary {
 		}
 		else System.out.println("Элементы загружаемого словаря не удовлетворяют ограничениям");
 	}
+	public void LoadDictionary(DataHandler dh) {
+		HashMap<String, String> hm = dh.readFile();
+		if (ValidateDictionary(hm)) {
+			dict.clear(); 
+			dict = hm;
+		}
+		else System.out.println("Элементы загружаемого словаря не удовлетворяют ограничениям");
+	}
+	
 	
 	private boolean ValidateDictionary(HashMap<String, String> hm) {
 		
@@ -59,7 +68,6 @@ public class Dictionary {
 		}
 		return true;
 	}
-	
 	
 	
 }
