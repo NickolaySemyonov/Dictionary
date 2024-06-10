@@ -1,73 +1,69 @@
 import java.util.HashMap;
 
-public class Dictionary {
+public class Dictionary implements IDictionary{
 	
-	private HashMap<String, String> dict = new HashMap<String, String>();
+	private HashMap<String, String> dictionary = new HashMap<String, String>();
+	private DictChecks checks = new DictChecks("^[А-Яа-яA-Za-z0-9_]+$", "^[А-Яа-яA-Za-z0-9_]+$");
+	private IDictFileIO io;
+	private String filename; 
 	
-	private String KeyRegEx;
-	private String ValueRegEx;
+	public Dictionary(String filename) throws CustomException {
+		
+		this.filename = filename;
+		io = switch (filename.substring(filename.lastIndexOf("."))){
+		case ".txt"-> new TxtDictIO();
+		default -> new TxtDictIO();	
+		};
+		LoadDict(filename);
+	}
 	
-	public boolean CheckKey(String key) {return key.matches(KeyRegEx);}
-	public boolean CheckValue(String value) {return value.matches(ValueRegEx);}
+	public Dictionary(String filename, String keyConstraint, String valueConstraint) throws CustomException {
+		
+		this.filename = filename;
+		io = switch (filename.substring(filename.lastIndexOf("."))){
+		case ".txt"-> new TxtDictIO();
+		default -> new TxtDictIO();	
+		};
+		checks = new DictChecks(keyConstraint, valueConstraint);
+		LoadDict(filename);
+	}
 	
-	@SuppressWarnings("unchecked")
-	public HashMap<String, String> GetDictionary() {return (HashMap<String, String>) dict.clone();}
+	@Override
+	public void LoadDict(String filename) throws CustomException {
+	
+		io.ReadDict(filename);
+		dictionary.clear();
+		dictionary = io.GetDictAsHashMap();
+		if (!checks.ValidateDictionary(dictionary)) 
+			CustomExceptions.InvalidContent.throwEx();
+	}
 
-	
-	public void SetConstraints(String keyConstr, String valConstr) {
-		dict.clear();
-		KeyRegEx = keyConstr;
-		ValueRegEx = valConstr;
-	}
-	
-	public String FindValue(String key) {
+	@Override
+	public void ShowAllPairs() {
 		
-		if(CheckKey(key) && dict.containsKey(key)) return dict.get(key);
-		else {
-			System.out.println("Ключ не найден");
-			return "";
-		}
+		for(var pair: dictionary.entrySet()) System.out.println(pair);
+		System.out.println();
 	}
-	
-	public void SetValue(String key, String value) {
+
+	@Override
+	public String Get(String key) throws CustomException {
+		if (!dictionary.containsKey(key)) CustomExceptions.KeyNotFound.throwEx();
+		return dictionary.get(key);
+	}
+
+	@Override
+	public void Put(String key, String value) throws CustomException {
 		
-		if (CheckKey(key) || CheckValue(value)) 
-			dict.put(key, value); 
-		else 
-			System.out.println("Введенные ключ и значение не удовлетворяют ограничениям словаря");
+		if (!checks.ValidatePair(key, value)) CustomExceptions.InvalidPair.throwEx();
+		dictionary.put(key, value);
+		io.WriteDict(filename);	
 	}
-	
-	public void RemoveItem(String key) {
+
+	@Override
+	public void Remove(String key) throws CustomException {
 		
-		if (CheckKey(key) && dict.containsKey(key)) dict.remove(key);
-		else System.out.println("Ключ не найден");
+		if (dictionary.containsKey(key)) dictionary.remove(key);
+		else CustomExceptions.KeyNotFound.throwEx();
 	}
-	
-	public void LoadDictionary(HashMap<String, String> hm) {
-		
-		if (ValidateDictionary(hm)) {
-			dict.clear(); 
-			dict = hm;
-		}
-		else System.out.println("Элементы загружаемого словаря не удовлетворяют ограничениям");
-	}
-	public void LoadDictionary(DataHandler dh) {
-		HashMap<String, String> hm = dh.readFile();
-		if (ValidateDictionary(hm)) {
-			dict.clear(); 
-			dict = hm;
-		}
-		else System.out.println("Элементы загружаемого словаря не удовлетворяют ограничениям");
-	}
-	
-	
-	private boolean ValidateDictionary(HashMap<String, String> hm) {
-		
-		for (String key: hm.keySet()) {
-			if (!CheckKey(key) || !CheckValue(hm.get(key))) return false;
-		}
-		return true;
-	}
-	
-	
+
 }
