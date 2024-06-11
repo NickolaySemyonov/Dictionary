@@ -7,26 +7,44 @@ public class Dictionary implements IDictionary{
 	private IDictFileIO io;
 	private String filename; 
 	
-	public Dictionary(String filename) throws CustomException {
+	public Dictionary(String filename){
 		
 		this.filename = filename;
 		io = switch (filename.substring(filename.lastIndexOf("."))){
 		case ".txt"-> new TxtDictIO();
 		default -> new TxtDictIO();	
 		};
-		LoadDict(filename);
+		
+		try {
+			LoadDict(filename);
+		}
+		catch(CustomException e) {
+			System.out.println(e.getMessage());
+		}
+		
 	}
 	
-	public Dictionary(String filename, String keyConstraint, String valueConstraint) throws CustomException {
-		
+	public Dictionary(String filename, String keyConstraint, String valueConstraint) {
 		this.filename = filename;
 		io = switch (filename.substring(filename.lastIndexOf("."))){
 		case ".txt"-> new TxtDictIO();
 		default -> new TxtDictIO();	
 		};
 		checks = new DictChecks(keyConstraint, valueConstraint);
-		LoadDict(filename);
+		
+		try {
+			LoadDict(filename);
+		}
+		catch(CustomException e) {
+			System.out.println(filename);
+			System.out.println(e.getMessage());
+		}
 	}
+
+	public String GetCurrentFileName() {
+		return filename;
+	}
+	
 	
 	@Override
 	public void LoadDict(String filename) throws CustomException {
@@ -65,5 +83,6 @@ public class Dictionary implements IDictionary{
 		if (dictionary.containsKey(key)) dictionary.remove(key);
 		else CustomExceptions.KeyNotFound.throwEx();
 	}
+	
 
 }
