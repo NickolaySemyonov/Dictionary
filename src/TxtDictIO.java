@@ -11,16 +11,17 @@ import java.util.regex.Pattern;
 public class TxtDictIO implements IDictFileIO{
 
 	private HashMap<String, String> txtDictBuff = new HashMap<String, String>();
+	final String lineFormat = "^[А-Яа-яA-Za-z0-9_]+:[А-Яа-яA-Za-z0-9_]+$";
+	final String filenameFormat = "^[А-Яа-яA-Za-z0-9_]+[.]txt$"; 
 	
 	@Override
 	public void ReadDict(String filepath) throws CustomException {
 		
 		HashMap<String, String> pairs = new HashMap<String, String>();
-		final String lineFormat = "^[А-Яа-яA-Za-z0-9_]+:[А-Яа-яA-Za-z0-9_]+$";
-		final String extentionFormat = "^[А-Яа-яA-Za-z0-9_]+[.]txt$"; 
+		
 		String line;
 		
-		if (Pattern.matches(extentionFormat, filepath)) CustomExceptions.FileTypeMismatch.throwEx();
+		if (Pattern.matches(filenameFormat, filepath)) CustomExceptions.FileTypeMismatch.throwEx();
 		
 		try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
 			while ((line = br.readLine())!=null) {
@@ -46,9 +47,7 @@ public class TxtDictIO implements IDictFileIO{
 	@Override
 	public void WriteDict(String filepath) throws CustomException{
 		
-		final String extentionFormat = "^[\\w]+[.]txt$"; 
-		
-		if (Pattern.matches(extentionFormat, filepath)) CustomExceptions.FileTypeMismatch.throwEx();
+		if (Pattern.matches(filenameFormat, filepath)) CustomExceptions.FileTypeMismatch.throwEx();
 		
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(filepath))) {
 			var keyset = txtDictBuff.keySet();
